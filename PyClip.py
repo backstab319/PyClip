@@ -1,4 +1,3 @@
-import pip
 from os import system, name
 from time import sleep
 
