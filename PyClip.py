@@ -8,7 +8,7 @@ def autoModuleInstall(modName):
     input("Press any key to continue...")
 
 try:
-    import pyperclip
+    import pyperclip as cb
 except (ImportError, ModuleNotFoundError) as moduleName:
     print("The following packages are not available")
     print(moduleName.name)
@@ -21,6 +21,7 @@ class pyclip:
     def pause(self, mes="Please press any key to continue"): input(mes)
     
     def __init__(self):
+        self.clrscr()
         self.clipContent = []
         self.refTimer = 1
 
@@ -28,10 +29,16 @@ class pyclip:
         self.clrscr()
         x,rec = input("""PyClip Settings
 1.Change refresh timer
+2.View caught data
+3.Select caught data
+4.Delete caught data
 0.Exit
 00.Go back
 """),0
         if x == "1": self.pyClipTimer()
+        elif x == "2": self.clipView()
+        elif x == "3": self.clipSelect()
+        elif x == "4": self.clipDelete()
         elif x == "0": self.pyClipExit()
         elif x == "00": rec = 1
         else:
@@ -41,7 +48,11 @@ class pyclip:
 
     def pyClipTimer(self):
         self.clrscr()
-        self.refTimer = int(input("Enter the refresh timer in integer "))
+        try: self.refTimer = int(input("Enter the refresh timer in integer "))
+        except ValueError:
+            print("Please enter an integer!")
+            self.pause()
+            self.pyClipTimer()
 
     def pyClipExit(self):
         self.clrscr()
@@ -50,10 +61,41 @@ class pyclip:
         self.clrscr()
         exit()
 
-    def clip(self):
+    def clipView(self):
         self.clrscr()
+        if self.clipContent: print("The data caught are as follows\n","\n".join([i for i in self.clipContent]))
+        else: print("There is no data caught from your clipboard.")
+        self.pause()
+
+    def clipSelect(self):
+        self.clrscr()
+        rec = 0
+        if self.clipContent is not []:
+            for i,j in enumerate(self.clipContent):
+                print(str(i)+"."+str(j))
+            print(str(len(self.clipContent))+".Go back")
+            try:
+                x = int(input("Please select a value "))
+                if x is len(self.clipContent): return
+                cb.copy(self.clipContent[x])
+            except ValueError:
+                print("Please enter an integer")
+                rec = 1
+            except IndexError:
+                print("The entered value does not exist!")
+                rec = 1
+        else: print("There is no data to select")
+        self.pause()
+        if rec == 1: self.clipSelect()
+
+    def clipDelete(self):
+        None
+
+    def clip(self):
         try:
-            print("Catching clipboard data")
+            if cb.paste() not in self.clipContent and cb.paste() is not "":
+                self.clipContent.append(cb.paste())
+                print(cb.paste(),"data caught")
             sleep(1)
         except KeyboardInterrupt:
             self.clipMain()
