@@ -27,6 +27,8 @@ class pyclip:
 
     def clipMain(self):
         self.clrscr()
+        if cb.paste(): print("The current clip data is",cb.paste())
+        else: print("Currenty no data in clip")
         x,rec = input("""PyClip Settings
 1.Change refresh timer
 2.View caught data
@@ -38,7 +40,11 @@ class pyclip:
         if x == "1": self.pyClipTimer()
         elif x == "2": self.clipView()
         elif x == "3": self.clipSelect()
-        elif x == "4": self.clipDelete()
+        elif x == "4": 
+            if self.clipContent != []: self.clipDelete()
+            else:
+                print("There is no clip data to delete")
+                self.pause()
         elif x == "0": self.pyClipExit()
         elif x == "00": rec = 1
         else:
@@ -89,7 +95,23 @@ class pyclip:
         if rec == 1: self.clipSelect()
 
     def clipDelete(self):
-        None
+        self.clrscr()
+        rec = 0
+        for i,j in enumerate(self.clipContent):
+            print(str(i)+"."+str(j))
+        print(str(len(self.clipContent))+".Go back")
+        try:
+            x = int(input("Please select a value to delete "))
+            if x is len(self.clipContent): return
+            self.clipContent.pop(x)
+        except ValueError:
+            print("Please enter an integer")
+            rec = 1
+        except IndexError:
+            print("The entered value does not exist!")
+            rec = 1
+        self.pause()
+        if rec == 1: self.clipSelect()
 
     def clip(self):
         try:
